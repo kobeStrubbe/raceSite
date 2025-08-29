@@ -1,0 +1,177 @@
+
+const standardMenuView = "<Button id=\"addButton\" onclick=\"clickAddRace()\" >Add race</Button>"
+const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+]
+const daysInMonth = {
+    "January": 31,
+    "February": 28,
+    "March": 31,
+    "April": 30,
+    "May": 31,
+    "June": 30,
+    "July": 31,
+    "August": 31,
+    "September": 30,
+    "October": 31,
+    "November": 30,
+    "December": 31
+}
+
+const weekDays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+]
+
+class CurrentMonthYearObservable {
+    constructor() {
+        this.year = new Date().getFullYear();
+        this.month = new Date().getMonth() + 1; // JS maanden zijn 0-based
+        this.listeners = [];
+    }
+
+    setMonthYear(year, month) {
+        this.year = year;
+        this.month = month;
+        this.invalidate();
+    }
+
+    nextMonth() {
+        if (this.month === 12) {
+            this.month = 1;
+            this.year++;
+        } else {
+            this.month++;
+        }
+        this.invalidate();
+    }
+
+    prevMonth() {
+        if (this.month === 1) {
+            this.month = 12;
+            this.year--;
+        } else {
+            this.month--;
+        }
+        this.invalidate();
+    }
+
+    getYear() {
+        return this.year;
+    }
+
+    getMonth() {
+        return this.month;
+    }
+
+    addListener(listener) {
+        this.listeners.push(listener);
+    }
+
+    invalidate() {
+        for (let listener of this.listeners) {
+            listener(this.year, this.month); // gewoon de functie aanroepen
+        }
+    }
+
+}
+
+/**
+ * Om de maand bij het opstarten te laden die zijn gebonden aan de dag van vandaag.
+ */
+let yearMonthObservable = new CurrentMonthYearObservable();
+
+function start() {
+    loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth());
+
+    document.getElementById("nextButton").addEventListener("click", () => {
+        yearMonthObservable.nextMonth();
+    });
+    document.getElementById("prevButton").addEventListener("click", () => {
+        yearMonthObservable.prevMonth();
+    });
+
+    yearMonthObservable.addListener((year, month) => {
+        document.getElementById("days_list").innerHTML = "";
+        loadMonth(year, month);
+    });
+}
+
+
+/*
+ * Hier moet worden het nummer (1-12) worden meegegeven die staan voor resp. maand en jaar,
+ * waarvoor de maand layout moet worden berekend.
+ */
+function loadMonth(yearNumber, monthNumber) {
+    document.getElementById("days_list").innerHTML = "";
+
+    function getAmountOfDays (year, month) {
+        return new Date(year, month, 0).getDate();
+    }
+    function getStartDay(year, month) {
+        return new Date(year, (month - 1) % 12, 1).getDay();
+    }
+
+    function createView(dayNumber, month, year) {
+        const el = document.createElement("li");
+        el.textContent = dayNumber;
+
+        const races = getRacesOnDate(new Date(year, month - 1, dayNumber));
+        for (let race of races) {
+            const raceViewCalendar = createRaceView(race);
+            el.appendChild(raceViewCalendar); // DOM-element toevoegen
+        }
+
+        return el;
+    }
+
+    function createRaceView(race) {
+        const div = document.createElement("div");
+        div.classList.add("race_calendar_view");
+        div.onclick = function () {
+            clickAddRace();
+            addData(race);
+        }
+
+        const span = document.createElement("span");
+        span.textContent = race.name;
+
+        div.appendChild(span);
+        return div;
+    }
+
+
+    const amountOfDays = getAmountOfDays(yearNumber, monthNumber);
+    const startDay = getStartDay(yearNumber, monthNumber);
+    const prevMonthYear = (monthNumber === 1) ? yearNumber - 1 : yearNumber;
+    const prevMonth = (monthNumber === 1) ? 12 : monthNumber - 1;
+    const daysPrevMonth = getAmountOfDays(prevMonthYear, prevMonth);
+
+    document.getElementById("month_name").innerHTML = `${months[monthNumber - 1]} ${yearNumber}` ;
+
+    for (let i = daysPrevMonth - startDay + 2; i < daysPrevMonth + 1; i++) {
+        const view = createView(i, prevMonth, prevMonthYear);
+        document.getElementById("days_list").append(view);
+    }
+    for (let i = 1; i < amountOfDays + 1; i++) {
+        const view = createView(i, monthNumber, yearNumber);
+        document.getElementById("days_list").append(view);
+    }
+
+}

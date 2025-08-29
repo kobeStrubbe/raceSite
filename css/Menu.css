@@ -1,0 +1,127 @@
+/* menu: */
+#addButton {
+    margin-top: auto;
+    width: 100%;
+    border-width: 0;
+    border-radius: 50px;
+    background-color: #a4dbd9;
+    padding: 5px 20px;
+    font-family: Poppins, serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+}
+
+#addButton:hover {
+    background-color: #e0e0e0 ;
+}
+
+#addButton:active {
+    background-color: #e0e0e0;
+    border-color: #a8a8a8;
+    border-width: 1px;
+    border-style: solid;
+}
+
+#menu {
+    font-family: Poppins, serif;
+    display: flex;
+    width: 200px;
+    padding: 10px;
+    flex-direction: column;
+    height: 350px;
+    border-radius: 15px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e0e0e0;
+    text-align: center;
+    flex: 0 0 200px;
+}
+
+.menuInput {
+    font-family: Poppins, serif;
+    font-size: 11px;
+    width: 180px;
+    margin-bottom: 5px;
+}
+
+.menuInputError {
+    background-color: #dbb2ad !important;
+    border-color: red !important;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+}
+
+.menuInputSmall {
+    font-family: Poppins, serif;
+    font-size: 11px;
+    width: 80px;
+    margin: 0 5px 0 0;
+}
+
+.menuLabel {
+    font-family: Poppins, serif;
+    font-size: 11px;
+    margin: 10px 0 5px 0;
+    display: block;
+    text-align: left;
+}
+
+#top_race_menu {
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    width: 180px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 10px; background-color: #a4dbd9;
+    font-family: Poppins, serif;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+}
+
+#race_menu_close_button {
+    display: flex;
+    align-items: center;   /* verticaal centreren */
+    justify-content: center; /* horizontaal centreren */
+    margin-left: auto;
+    font-family: Poppins, serif;
+    font-size: 15px;
+    font-weight: bold;
+    background-color: #e0e0e0;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    cursor: pointer;
+    border-width: 2px;
+    border-style: solid;
+    border-color: white;
+}
+
+#race_menu_close_button:hover {
+    border-color: #a8a8a8;
+    color: #a8a8a8;
+}
+
+#race_menu_close_button:active {
+    border-color: black;
+    color: black;
+}
+
+#distance_input_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#distance_type_select {
+    font-family: Poppins, serif;
+    height: 22px;
+}

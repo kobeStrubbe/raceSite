@@ -1,0 +1,123 @@
+#content_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* keeps top aligned */
+    gap: 20px; /* space between menu and calendar */
+}
+
+#calendar {
+    flex: 1;                /* take all remaining space */
+    min-width: 600px;       /* don’t get smaller than 600px */
+    height: 100%;
+    border-radius: 15px;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.arrowButton {
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.arrowButton:hover {
+    background-color: white;
+}
+
+.arrowButton:active {
+    background-color: white;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #a8a8a8;
+}
+
+#month_box {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    height: 10px;
+    padding: 30px 20px 30px 20px;
+    background-color: #a4dbd9;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    color: white;
+}
+
+.arrow {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+    transition: color 0.2s;
+}
+
+.arrow:hover {
+    color: #000;
+}
+
+#month_day {
+    flex: 1;
+    text-align: center;
+}
+
+
+
+#weekdays {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 gelijke kolommen */
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+#weekdays li {
+    padding: 5px 0;
+    font-weight: bold;
+}
+
+#days_box ol {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* zelfde 7 kolommen */
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#days_box li {
+    min-height: 50px;
+    text-align: left;
+    border: 1px solid #e1ebea;
+    border-radius: 2px;
+    padding: 5px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+}
+
+#days_box li:hover {
+    background-color: #e0e0e0;
+}
+
+.race_calendar_view {
+    font-family: 'Poppins', sans-serif;
+    font-size: 7px;
+    background-color: #a4dbd9;
+    border-radius: 4px;
+    padding:0 5px;
+    margin: 2px 0;
+    cursor: pointer;
+}
+
+.race_calendar_view:hover {
+    border: 1px solid #a8a8a8;
+
+}

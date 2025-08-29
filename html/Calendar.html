@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar</title>
+    <link href="../css/Calendar.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="../css/Menu.css" rel="stylesheet">
+</head>
+<script src="../js/Calendar.js"></script>
+<script src="../js/RaceDayDataSave.js"></script>
+<script src="../js/AddRaceMenu.js"></script>
+<body onload="start()">
+<div id="content_container">
+    <div id="menu">
+        <Button id="addButton" onclick="clickAddRace()" >Add race</Button>
+    </div>
+    <div id="calendar">
+        <div id="month_box">
+            <Button class="arrowButton" id="prevButton">&#8592;</Button>
+            <span id="month_name"></span>
+            <Button class="arrowButton" id="nextButton">&#8594;</Button>
+        </div>
+        <ul id="weekdays">
+          <li>Monday</li>
+          <li>Tuesday</li>
+          <li>Wednesday</li>
+          <li>Thursday</li>
+          <li>Friday</li>
+          <li>Saturday</li>
+          <li>Sunday</li>
+        </ul>
+        <div id="days_box">
+          <ol id="days_list">
+          </ol>
+        </div>
+    </div>
+</div>
+</body>
+</html>
