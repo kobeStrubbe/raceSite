@@ -95,7 +95,7 @@ function clickSaveRace() {
     );
 
     //race opslaan in het geheugen:
-    saveRace(race);
+    saveData.saveRace(race);
     closeRaceMenu();
 }
 

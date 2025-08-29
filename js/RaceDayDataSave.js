@@ -32,50 +32,62 @@ class Race {
 
 }
 
-/**
- * Deze functie is dan om de datum in de juiste manier worden opgeslagen
- * De maanden zijn 1-12.
- * @param date
- * @returns {string}
- */
-function formatDateKey(date) {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const dd = String(date.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
-}
 
-/**
- * Hier moet als param een object van het type Race worden meegegeven.
- * @param race
- */
-function saveRace(race) {
-    if (! ( race instanceof Race ) ) {
-        alert("geen Race klasse meegegeven met de functie.")
-        throw new Error("geen Race klasse");
+class SaveData {
+
+    constructor() {
+        this.listeners = [];
     }
-    const racesArr = getRacesOnDate(race.date);
 
-    racesArr.push(race);
-    const key = formatDateKey(race.date);
-    localStorage.setItem(key, JSON.stringify(racesArr));
+    addListener(listener) {
+        this.listeners.push(listener);
+    }
 
-    loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth());
-}
+    /**
+     * Deze functie is dan om de datum in de juiste manier worden opgeslagen
+     * De maanden zijn 1-12.
+     * @param date
+     * @returns {string}
+     */
+    formatDateKey(date) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+    }
 
-/**
- * Deze haalt alle races op, op een bepaalde dag.
- * @param date
- * @returns {Race[]}
- */
-function getRacesOnDate(date) {
-    const key = formatDateKey(date);
-    const rawArray = JSON.parse(localStorage.getItem(key)) || [];
-    return rawArray.map(raceObj => new Race(raceObj.name, raceObj.place, raceObj.distance, new Date(raceObj.date)));
-}
+    /**
+     * Hier moet als param een object van het type Race worden meegegeven.
+     * @param race
+     */
+    saveRace(race) {
+        if (!(race instanceof Race)) {
+            alert("geen Race klasse meegegeven met de functie.")
+            throw new Error("geen Race klasse");
+        }
+        const racesArr = this.getRacesOnDate(race.date);
 
-function invalidateSaveData() {
-    for (let listener of listenersAddRaceMenu) {
-        listener.handleChangeSaveData();
+        racesArr.push(race);
+        const key = saveData.formatDateKey(race.date);
+        localStorage.setItem(key, JSON.stringify(racesArr));
+
+        loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth());
+    }
+
+    /**
+     * Deze haalt alle races op, op een bepaalde dag.
+     * @param date
+     * @returns {Race[]}
+     */
+    getRacesOnDate(date) {
+        const key = this.formatDateKey(date);
+        const rawArray = JSON.parse(localStorage.getItem(key)) || [];
+        return rawArray.map(raceObj => new Race(raceObj.name, raceObj.place, raceObj.distance, new Date(raceObj.date)));
+    }
+
+    invalidateSaveData() {
+        for (let listener of this.listeners) {
+            listener.handleChangeSaveData();
+        }
     }
 }

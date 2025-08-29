@@ -1,4 +1,4 @@
-
+const saveData = new SaveData();
 const standardMenuView = "<Button id=\"addButton\" onclick=\"clickAddRace()\" >Add race</Button>"
 const months = [
     "January",
@@ -99,7 +99,6 @@ let yearMonthObservable = new CurrentMonthYearObservable();
 
 function start() {
     loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth());
-
     document.getElementById("nextButton").addEventListener("click", () => {
         yearMonthObservable.nextMonth();
     });
@@ -121,6 +120,7 @@ function start() {
 function loadMonth(yearNumber, monthNumber) {
     document.getElementById("days_list").innerHTML = "";
 
+
     function getAmountOfDays (year, month) {
         return new Date(year, month, 0).getDate();
     }
@@ -132,7 +132,7 @@ function loadMonth(yearNumber, monthNumber) {
         const el = document.createElement("li");
         el.textContent = dayNumber;
 
-        const races = getRacesOnDate(new Date(year, month - 1, dayNumber));
+        const races = saveData.getRacesOnDate(new Date(year, month - 1, dayNumber));
         for (let race of races) {
             const raceViewCalendar = createRaceView(race);
             el.appendChild(raceViewCalendar); // DOM-element toevoegen
