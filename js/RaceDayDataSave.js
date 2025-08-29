@@ -1,4 +1,3 @@
-let currentId = parseInt(localStorage.getItem("id"));
 
 /*
 Alle data omtrent de wedstrijden worden locaal in de browser op datum opgeslagen.
@@ -6,12 +5,13 @@ Alle data omtrent de wedstrijden worden locaal in de browser op datum opgeslagen
 class Race {
     /**
      * Een klasse die de opslag van een race voorstelt.
-     * @param name : een string die de naam bijhoudt.
-     * @param place : een string met de locatie
-     * @param distance : een number met de afstand in m.
-     * @param date : een Date met de datum van de race
+     * @param name :  string die de naam bijhoudt.
+     * @param place :  string met de locatie
+     * @param distance :  number met de afstand in m.
+     * @param date :  Date met de datum van de race
+     * @param id Int dit is de unieke id van elke race.
      */
-    constructor(name, place, distance, date) {
+    constructor(name, place, distance, date, id= null) {
         if (
             typeof name !== "string"
             || typeof place !== "string"
@@ -22,12 +22,12 @@ class Race {
             throw new Error("Geen juiste dataTypes meegegeven met de klasse Race");
         }
 
+        this.id = id ?? saveData.getNextId();
         this.name = name;
         this.place = place;
         this.distance = distance;
         this.date = date;
     }
-
 
 
 }
@@ -82,12 +82,39 @@ class SaveData {
     getRacesOnDate(date) {
         const key = this.formatDateKey(date);
         const rawArray = JSON.parse(localStorage.getItem(key)) || [];
-        return rawArray.map(raceObj => new Race(raceObj.name, raceObj.place, raceObj.distance, new Date(raceObj.date)));
+        return rawArray.map(raceObj => new Race(raceObj.name, raceObj.place, raceObj.distance, new Date(raceObj.date), parseInt(raceObj.id)));
     }
 
     invalidateSaveData() {
         for (let listener of this.listeners) {
             listener.handleChangeSaveData();
         }
+    }
+
+    removeRace(id, race) {
+        const arr = this.getRacesOnDate(race.date);
+
+        const index = arr.findIndex(r => r.id === id);
+
+        if (index !== -1) {
+            arr.splice(index, 1); // verwijder element
+        }
+        const key = saveData.formatDateKey(race.date);
+        localStorage.setItem(key, JSON.stringify(arr));
+    }
+
+    clearDate(date) {
+        const key = this.formatDateKey(date);
+        localStorage.removeItem(key)
+    }
+
+    /**
+     * Dit is om de unieke id van elke race te gaan opvragen.
+     * @returns {string}
+     */
+    getNextId() {
+        const nextId = parseInt(localStorage.getItem("id"));
+        localStorage.setItem("id", nextId + 1);
+        return nextId;
     }
 }
