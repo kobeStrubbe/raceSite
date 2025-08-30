@@ -1,44 +1,3 @@
-const saveData = new SaveData();
-const standardMenuView = "<Button id=\"addButton\" onclick=\"clickAddRace()\" >Add race</Button>"
-const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-]
-const daysInMonth = {
-    "January": 31,
-    "February": 28,
-    "March": 31,
-    "April": 30,
-    "May": 31,
-    "June": 30,
-    "July": 31,
-    "August": 31,
-    "September": 30,
-    "October": 31,
-    "November": 30,
-    "December": 31
-}
-
-const weekDays = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-]
-
 class CurrentMonthYearObservable {
     constructor() {
         this.year = new Date().getFullYear();
@@ -92,10 +51,51 @@ class CurrentMonthYearObservable {
 
 }
 
+const saveData = new SaveData();
 /**
  * Om de maand bij het opstarten te laden die zijn gebonden aan de dag van vandaag.
  */
 let yearMonthObservable = new CurrentMonthYearObservable();
+const standardMenuView = "<Button id=\"addButton\" onclick=\"clickAddRace()\" >Add race</Button>"
+const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+]
+const daysInMonth = {
+    "January": 31,
+    "February": 28,
+    "March": 31,
+    "April": 30,
+    "May": 31,
+    "June": 30,
+    "July": 31,
+    "August": 31,
+    "September": 30,
+    "October": 31,
+    "November": 30,
+    "December": 31
+}
+
+const weekDays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+]
+
 
 function start() {
     loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth());
@@ -142,10 +142,15 @@ function loadMonth(yearNumber, monthNumber) {
     }
 
     function createRaceView(race) {
-        const div = document.createElement("div");
-        div.classList.add("race_calendar_view");
-        div.style.backgroundColor = race.color;
-        div.onclick = function () {
+        const outsideDiv = document.createElement("div");
+        const insideDiv = document.createElement("div");
+        const delButton = document.createElement("button");
+        delButton.textContent = 'x';
+        delButton.classList.add("race_calendar_del_button");
+
+        outsideDiv.classList.add("race_calendar_view");
+        outsideDiv.style.backgroundColor = race.color;
+        outsideDiv.onclick = function () {
             clickAddRace();
             addData(race);
         }
@@ -153,8 +158,15 @@ function loadMonth(yearNumber, monthNumber) {
         const span = document.createElement("span");
         span.textContent = race.name;
 
-        div.appendChild(span);
-        return div;
+        insideDiv.appendChild(span);
+        outsideDiv.appendChild(insideDiv);
+        outsideDiv.appendChild(delButton);
+
+        delButton.addEventListener("click", function () {
+            saveData.removeRace(race);
+        })
+
+        return outsideDiv;
     }
 
 
@@ -176,3 +188,6 @@ function loadMonth(yearNumber, monthNumber) {
     }
 
 }
+
+saveData.addListener(() => loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth()));
+

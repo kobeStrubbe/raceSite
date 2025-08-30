@@ -74,7 +74,7 @@ class SaveData {
         const key = saveData.formatDateKey(race.date);
         localStorage.setItem(key, JSON.stringify(racesArr));
 
-        loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth());
+        this.invalidateSaveData();
     }
 
     /**
@@ -97,11 +97,15 @@ class SaveData {
 
     invalidateSaveData() {
         for (let listener of this.listeners) {
-            listener.handleChangeSaveData();
+            listener();
         }
     }
 
-    removeRace(id, race) {
+    removeRace(race, id=null) {
+        if (! id) {
+            id = race.id;
+        }
+
         const arr = this.getRacesOnDate(race.date);
 
         const index = arr.findIndex(r => r.id === id);
@@ -111,12 +115,17 @@ class SaveData {
         }
         const key = saveData.formatDateKey(race.date);
         localStorage.setItem(key, JSON.stringify(arr));
+
+        this.invalidateSaveData();
     }
 
     clearDate(date) {
         const key = this.formatDateKey(date);
-        localStorage.removeItem(key)
+        localStorage.removeItem(key);
+
+        this.invalidateSaveData();
     }
+
 
     /**
      * Dit is om de unieke id van elke race te gaan opvragen.

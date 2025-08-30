@@ -18,11 +18,23 @@ const raceMenuView = `
       </select>
     </div>
     <label for="color_input" class="menuLabel">Color:</label>
-    <input type="color" id="color_input" class="menuInput" style="height: 22px" >
+    <select id="color_input" class="menuInput" style="height: 22px" onchange="updateBackground(this)">
+          <option value="#FADADD" style="background-color:#FADADD;">Light Pink</option>
+          <option value="#FFD1DC" style="background-color:#FFD1DC;">Cotton Candy</option>
+          <option value="#FFE4E1" style="background-color:#FFE4E1;">Misty Rose</option>
+          <option value="#FFDAB9" style="background-color:#FFDAB9;">Pastel Peach</option>
+          <option value="#FFEFD5" style="background-color:#FFEFD5;">Papaya Whip</option>
+          <option value="#FFF0E1" style="background-color:#FFF0E1;">Soft Apricot</option>
+          <option value="#E8F8F5" style="background-color:#E8F8F5;">Mint Cream</option>
+          <option value="#D6F5E3" style="background-color:#D6F5E3;">Pastel Mint</option>
+          <option value="#E6F7FF" style="background-color:#E6F7FF;">Baby Blue</option>
+          <option value="#E8EAFE" style="background-color:#E8EAFE;">Lavender</option>
+          <option value="#FFF9D6" style="background-color:#FFF9D6;">Lemon Chiffon</option>
+    </select>
     <label for="date_input" class="menuLabel">Date:</label>
     <input type="date" id="date_input" class="menuInput">
     <Label class="menuLabel">Travel time:</Label>
-    <span id="travel_time_span"></span>
+    <span id="travel_time_span">...</span>
     <button id="addButton" onclick="clickSaveRace()">Save</button>
   </div>
 `;
@@ -114,7 +126,7 @@ async function clickSaveRace() {
             travel
         );
 
-        saveData.removeRace(parseInt(id), race);
+        saveData.removeRace(race, parseInt(id));
     } else {
         race = new Race(
             nameInput.value,
@@ -156,5 +168,9 @@ function addData(race) {
     dateInput.value =
         `${race.date.getFullYear()}-${String(race.date.getMonth() + 1).padStart(2, "0")}-${String(race.date.getDate()).padStart(2, "0")}`;
     travelTime.innerHTML = race.travelTime + " min";
+}
+
+function updateBackground(select) {
+    select.style.backgroundColor = select.value;
 }
 
