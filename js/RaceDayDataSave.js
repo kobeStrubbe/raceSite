@@ -2,6 +2,7 @@
 /*
 Alle data omtrent de wedstrijden worden locaal in de browser op datum opgeslagen.
  */
+
 class Race {
     /**
      * Een klasse die de opslag van een race voorstelt.
@@ -11,7 +12,7 @@ class Race {
      * @param date :  Date met de datum van de race
      * @param id Int dit is de unieke id van elke race.
      */
-    constructor(name, place, distance, date, id= null) {
+    constructor(name, place, distance, date, color, id= null, travelTime = null) {
         if (
             typeof name !== "string"
             || typeof place !== "string"
@@ -27,6 +28,8 @@ class Race {
         this.place = place;
         this.distance = distance;
         this.date = date;
+        this.color = color;
+        this.travelTime = travelTime ?? getTravelTime(startLocation, place).duration;
     }
 
 
@@ -82,7 +85,14 @@ class SaveData {
     getRacesOnDate(date) {
         const key = this.formatDateKey(date);
         const rawArray = JSON.parse(localStorage.getItem(key)) || [];
-        return rawArray.map(raceObj => new Race(raceObj.name, raceObj.place, raceObj.distance, new Date(raceObj.date), parseInt(raceObj.id)));
+        return rawArray.map(raceObj => new Race(raceObj.name,
+            raceObj.place,
+            raceObj.distance,
+            new Date(raceObj.date),
+            raceObj.color,
+            parseInt(raceObj.id),
+            raceObj.travelTime
+        ));
     }
 
     invalidateSaveData() {

@@ -1,6 +1,6 @@
 /* menu: */
 #addButton {
-    margin-top: auto;
+    margin-top: 10px;
     width: 100%;
     border-width: 0;
     border-radius: 50px;
@@ -30,7 +30,7 @@
     width: 200px;
     padding: 10px;
     flex-direction: column;
-    height: 350px;
+    min-height: 350px;
     border-radius: 15px;
     border-width: 1px;
     border-style: solid;
@@ -119,6 +119,7 @@
     flex-direction: row;
     align-items: center;
     margin-bottom: 10px;
+    margin-left: 7px;
 }
 
 #distance_type_select {

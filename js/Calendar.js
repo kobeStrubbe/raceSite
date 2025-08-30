@@ -144,6 +144,7 @@ function loadMonth(yearNumber, monthNumber) {
     function createRaceView(race) {
         const div = document.createElement("div");
         div.classList.add("race_calendar_view");
+        div.style.backgroundColor = race.color;
         div.onclick = function () {
             clickAddRace();
             addData(race);

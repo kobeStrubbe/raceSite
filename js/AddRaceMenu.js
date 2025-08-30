@@ -17,8 +17,12 @@ const raceMenuView = `
         <option value="mile">mile</option>
       </select>
     </div>
+    <label for="color_input" class="menuLabel">Color:</label>
+    <input type="color" id="color_input" class="menuInput" style="height: 22px" >
     <label for="date_input" class="menuLabel">Date:</label>
     <input type="date" id="date_input" class="menuInput">
+    <Label class="menuLabel">Travel time:</Label>
+    <span id="travel_time_span"></span>
     <button id="addButton" onclick="clickSaveRace()">Save</button>
   </div>
 `;
@@ -37,6 +41,7 @@ function clickAddRace() {
     const distanceInput = document.getElementById("distance_input");
     const distanceTypeInput = document.getElementById("distance_type_select");
     const locationInput = document.getElementById("location_input");
+    const colorInput = document.getElementById("color_input");
     const inputs = [nameInput, dateInput, distanceInput, distanceTypeInput, locationInput];
 
     for (let input of inputs) {
@@ -50,14 +55,15 @@ function clickAddRace() {
 /**
  * Ook moet er een aantal checks worden uitgevoerd.
  */
-function clickSaveRace() {
+async function clickSaveRace() {
 
     const nameInput = document.getElementById("race_name_input");
     const dateInput = document.getElementById("date_input");
     const distanceInput = document.getElementById("distance_input");
     const distanceTypeInput = document.getElementById("distance_type_select");
     const locationInput = document.getElementById("location_input");
-    const inputs = [nameInput, dateInput, distanceInput, distanceTypeInput, locationInput];
+    const colorInput = document.getElementById("color_input");
+    const inputs = [nameInput, dateInput, distanceInput, distanceTypeInput, locationInput, colorInput];
 
     function checkInput(input) {
         if (input.value.trim() === "") {
@@ -94,13 +100,18 @@ function clickSaveRace() {
 
     const id = document.getElementById("add_race_menu").getAttribute("data-race-id");
     let race;
+
+    const travel = await getTravelTime(startLocation, locationInput.value);
+
     if (id) {
         race = new Race(
             nameInput.value,
             locationInput.value,
             distanceValue,
             new Date(dateInput.value),
-            parseInt(id)
+            colorInput.value,
+            parseInt(id),
+            travel
         );
 
         saveData.removeRace(parseInt(id), race);
@@ -109,12 +120,14 @@ function clickSaveRace() {
             nameInput.value,
             locationInput.value,
             distanceValue,
-            new Date(dateInput.value)
+            new Date(dateInput.value),
+            colorInput.value,
+            null,
+            travel
         );
     }
 
     //race opslaan in het geheugen:
-
     saveData.saveRace(race);
     closeRaceMenu();
 }
@@ -131,14 +144,17 @@ function addData(race) {
     const distanceTypeInput = document.getElementById("distance_type_select");
     const locationInput = document.getElementById("location_input");
     const addRaceMenuDiv = document.getElementById("add_race_menu");
-
+    const colorInput = document.getElementById("color_input");
+    const travelTime = document.getElementById("travel_time_span");
     addRaceMenuDiv.setAttribute("data-race-id", race.id);
 
     nameInput.value = race.name;
     distanceInput.value = race.distance;
     distanceTypeInput.value = "m";
     locationInput.value = race.place;
+    colorInput.value = race.color;
     dateInput.value =
         `${race.date.getFullYear()}-${String(race.date.getMonth() + 1).padStart(2, "0")}-${String(race.date.getDate()).padStart(2, "0")}`;
-
+    travelTime.innerHTML = race.travelTime + " min";
 }
+
