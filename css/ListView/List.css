@@ -1,0 +1,22 @@
+
+#list_top {
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 4px;
+
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+
+
+}
+
+#list_view {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e0e0e0;
+    border-radius: 10px;
+}

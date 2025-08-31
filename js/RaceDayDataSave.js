@@ -126,7 +126,6 @@ class SaveData {
         this.invalidateSaveData();
     }
 
-
     /**
      * Dit is om de unieke id van elke race te gaan opvragen.
      * @returns {string}

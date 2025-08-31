@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Calendar</title>
-    <link href="../css/Calendar.css" rel="stylesheet">
+    <link href="../css/CalendarView/Calendar.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link href="../css/Menu.css" rel="stylesheet">
-    <link href="../css/LoadingScreen.css" rel="stylesheet">
+    <link href="../css/CalendarView/Menu.css" rel="stylesheet">
+    <link href="../css/CalendarView/LoadingScreen.css" rel="stylesheet">
 </head>
 <script src="../js/RaceDayDataSave.js"></script>
-<script src="../js/AddRaceMenu.js"></script>
-<script src="../js/Calendar.js"></script>
-<script src="../js/OpenRouteServiceAPI.js"></script>
+<script src="../js/CalendarView/AddRaceMenu.js"></script>
+<script src="../js/CalendarView/Calendar.js"></script>
+<script src="../js/CalendarView/OpenRouteServiceAPI.js"></script>
 <body onload="start()">
 <div id="content_container">
     <div id="loading_screen">
@@ -19,7 +19,11 @@
         </div>
     </div>
     <div id="menu">
-        <Button id="change_calander_view_button" class="change_calander_view_button" onclick="changeCalandarViewToList()">List view calendar</Button>
+        <Button
+                id="change_calander_view_button"
+                class="change_calander_view_button"
+                onclick="window.location.href='ListviewPage.html'"
+        >List view calendar</Button>
         <Button id="addButton" onclick="clickAddRace()" >Add race</Button>
     </div>
     <div id="calendar">

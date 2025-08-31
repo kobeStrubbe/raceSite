@@ -1,13 +1,13 @@
 #content_container {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* keeps top aligned */
-    gap: 20px; /* space between menu and calendar */
+    align-items: flex-start;
+    gap: 20px;
 }
 
 #calendar {
-    flex: 1;                /* take all remaining space */
-    min-width: 600px;       /* don’t get smaller than 600px */
+    flex: 1;
+    min-width: 600px;
     height: 100%;
     border-radius: 15px;
     border: 1px solid #e0e0e0;
@@ -121,8 +121,8 @@
 }
 
 .race_calendar_view span {
-    flex: 1;                     /* tekst neemt alle ruimte behalve die van button */
-    word-break: break-word;      /* tekst kan op meerdere regels */
+    flex: 1;
+    word-break: break-word;
 }
 
 .race_calendar_del_button {
