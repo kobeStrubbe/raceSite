@@ -114,10 +114,10 @@
     margin: 2px 0;
     cursor: pointer;
 
-    display: flex;               /* flex container */
-    justify-content: space-between; /* tekst links, button rechts */
-    align-items: center;         /* verticaal centreren */
-    gap: 5px;                    /* ruimte tussen tekst en button */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
 }
 
 .race_calendar_view span {
@@ -158,5 +158,4 @@
 
 .race_calendar_view:hover {
     border: 1px solid #a8a8a8;
-
 }

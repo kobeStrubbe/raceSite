@@ -68,6 +68,8 @@ function clickAddRace() {
  * Ook moet er een aantal checks worden uitgevoerd.
  */
 async function clickSaveRace() {
+    const loadingDiv = document.getElementById("loading_screen");
+    loadingDiv.style.visibility = "visible";
 
     const nameInput = document.getElementById("race_name_input");
     const dateInput = document.getElementById("date_input");
@@ -142,6 +144,7 @@ async function clickSaveRace() {
     //race opslaan in het geheugen:
     saveData.saveRace(race);
     closeRaceMenu();
+    loadingDiv.style.visibility = "hidden";
 }
 
 function closeRaceMenu() {

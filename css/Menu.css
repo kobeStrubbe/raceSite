@@ -126,3 +126,24 @@
     font-family: Poppins, serif;
     height: 22px;
 }
+
+.change_calander_view_button {
+    font-family: Poppins, serif;
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+    padding: 5px;
+    font-weight: bold;
+    color: white;
+}
+
+.change_calander_view_button:hover {
+    background-color: #e0e0e0;
+    color: black;
+}
+
+.change_calander_view_button:active {
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+}

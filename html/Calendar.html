@@ -6,6 +6,7 @@
     <link href="../css/Calendar.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="../css/Menu.css" rel="stylesheet">
+    <link href="../css/LoadingScreen.css" rel="stylesheet">
 </head>
 <script src="../js/RaceDayDataSave.js"></script>
 <script src="../js/AddRaceMenu.js"></script>
@@ -13,7 +14,12 @@
 <script src="../js/OpenRouteServiceAPI.js"></script>
 <body onload="start()">
 <div id="content_container">
+    <div id="loading_screen">
+        <div class="loader">
+        </div>
+    </div>
     <div id="menu">
+        <Button id="change_calander_view_button" class="change_calander_view_button" onclick="changeCalandarViewToList()">List view calendar</Button>
         <Button id="addButton" onclick="clickAddRace()" >Add race</Button>
     </div>
     <div id="calendar">

@@ -1,3 +1,4 @@
+
 class CurrentMonthYearObservable {
     constructor() {
         this.year = new Date().getFullYear();
@@ -56,7 +57,9 @@ const saveData = new SaveData();
  * Om de maand bij het opstarten te laden die zijn gebonden aan de dag van vandaag.
  */
 let yearMonthObservable = new CurrentMonthYearObservable();
-const standardMenuView = "<Button id=\"addButton\" onclick=\"clickAddRace()\" >Add race</Button>"
+const standardMenuView =
+    `<Button id="change_calander_view_button" class="change_calander_view_button" onclick="changeCalandarViewToList()">List view calendar</Button>
+     <Button id="addButton" onclick="clickAddRace()" >Add race</Button>`
 const months = [
     "January",
     "February",
@@ -186,6 +189,11 @@ function loadMonth(yearNumber, monthNumber) {
         const view = createView(i, monthNumber, yearNumber);
         document.getElementById("days_list").append(view);
     }
+
+}
+
+function changeCalandarViewToList() {
+
 
 }
 
