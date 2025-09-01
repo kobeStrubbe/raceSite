@@ -1,3 +1,5 @@
+import {SaveData} from "../RaceDayDataSave.js";
+import {addData} from "./AddRaceMenu.js";
 
 class CurrentMonthYearObservable {
     constructor() {
@@ -104,8 +106,8 @@ const weekDays = [
 ]
 
 
-function start() {
-    loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth());
+async function start() {
+    await loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth());
     document.getElementById("nextButton").addEventListener("click", () => {
         yearMonthObservable.nextMonth();
     });
@@ -113,18 +115,19 @@ function start() {
         yearMonthObservable.prevMonth();
     });
 
-    yearMonthObservable.addListener((year, month) => {
+    yearMonthObservable.addListener(async (year, month) => {
         document.getElementById("days_list").innerHTML = "";
-        loadMonth(year, month);
+        await loadMonth(year, month);
     });
 }
 
+window.start = start;
 
 /*
  * Hier moet worden het nummer (1-12) worden meegegeven die staan voor resp. maand en jaar,
  * waarvoor de maand layout moet worden berekend.
  */
-function loadMonth(yearNumber, monthNumber) {
+async function loadMonth(yearNumber, monthNumber) {
     document.getElementById("days_list").innerHTML = "";
 
 
@@ -135,11 +138,11 @@ function loadMonth(yearNumber, monthNumber) {
         return new Date(year, (month - 1) % 12, 1).getDay();
     }
 
-    function createView(dayNumber, month, year) {
+    async function createView(dayNumber, month, year) {
         const el = document.createElement("li");
         el.textContent = dayNumber;
 
-        const races = saveData.getRacesOnDate(new Date(year, month - 1, dayNumber));
+        const races = await saveData.getRacesOnDate(new Date(year, month - 1, dayNumber));
         for (let race of races) {
             const raceViewCalendar = createRaceView(race);
             el.appendChild(raceViewCalendar); // DOM-element toevoegen
@@ -169,8 +172,8 @@ function loadMonth(yearNumber, monthNumber) {
         outsideDiv.appendChild(insideDiv);
         outsideDiv.appendChild(delButton);
 
-        delButton.addEventListener("click", function () {
-            saveData.removeRace(race);
+        delButton.addEventListener("click", async function () {
+            await saveData.removeRace(race);
         })
 
         return outsideDiv;
@@ -186,15 +189,16 @@ function loadMonth(yearNumber, monthNumber) {
     document.getElementById("month_name").innerHTML = `${months[monthNumber - 1]} ${yearNumber}` ;
 
     for (let i = daysPrevMonth - startDay + 2; i < daysPrevMonth + 1; i++) {
-        const view = createView(i, prevMonth, prevMonthYear);
+        const view = await createView(i, prevMonth, prevMonthYear);
         document.getElementById("days_list").append(view);
     }
     for (let i = 1; i < amountOfDays + 1; i++) {
-        const view = createView(i, monthNumber, yearNumber);
+        const view = await createView(i, monthNumber, yearNumber);
         document.getElementById("days_list").append(view);
     }
 
 }
 
-saveData.addListener(() => loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth()));
+saveData.addListener(async () => await loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth()));
 
+export {saveData, standardMenuView};

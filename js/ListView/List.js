@@ -1,6 +1,8 @@
+import {SaveData, Race} from "../RaceDayDataSave.js";
+
 const saveData = new SaveData();
 
-
-function start() {
-
+async function start() {
 }
+
+window.start = start;

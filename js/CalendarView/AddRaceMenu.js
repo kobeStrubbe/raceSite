@@ -1,3 +1,7 @@
+import {getTravelTime, startLocation} from "./OpenRouteServiceAPI.js";
+import {saveData, standardMenuView} from "./Calendar.js";
+import {Race} from "../RaceDayDataSave.js";
+
 const raceMenuView = `
   <div id="add_race_menu">
     <div id="top_race_menu">
@@ -63,6 +67,7 @@ function clickAddRace() {
     }
 
 }
+window.clickAddRace = clickAddRace;
 
 /**
  * Ook moet er een aantal checks worden uitgevoerd.
@@ -128,7 +133,7 @@ async function clickSaveRace() {
             travel
         );
 
-        saveData.removeRace(race, parseInt(id));
+        saveData.updateRace(race);
     } else {
         race = new Race(
             nameInput.value,
@@ -139,18 +144,21 @@ async function clickSaveRace() {
             null,
             travel
         );
+
+        saveData.saveRace(race);
     }
 
-    //race opslaan in het geheugen:
-    saveData.saveRace(race);
     closeRaceMenu();
     loadingDiv.style.visibility = "hidden";
 }
+window.clickSaveRace = clickSaveRace;
 
 function closeRaceMenu() {
     const menu = document.getElementById("menu");
     menu.innerHTML = standardMenuView;
 }
+
+window.closeRaceMenu = closeRaceMenu;
 
 function addData(race) {
     const nameInput = document.getElementById("race_name_input");
@@ -176,4 +184,6 @@ function addData(race) {
 function updateBackground(select) {
     select.style.backgroundColor = select.value;
 }
+window.updateBackground = updateBackground;
 
+export {addData, raceMenuView};

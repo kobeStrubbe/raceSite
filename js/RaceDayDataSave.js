@@ -1,6 +1,12 @@
+import {createClient} from "https://esm.sh/@supabase/supabase-js@2"
+
+const supabaseUrl = "https://yifcxedpefprnaohpjsv.supabase.co"
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpZmN4ZWRwZWZwcm5hb2hwanN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NjIwNDEsImV4cCI6MjA3MjIzODA0MX0.BDh9lR2aa8yM2_Qa0xDI7OMCW9LAkBBk1ewTz9XerOw"
+const supabase = createClient(supabaseUrl, supabaseKey)
+
 
 /*
-Alle data omtrent de wedstrijden worden locaal in de browser op datum opgeslagen.
+Alle data omtrent de wedstrijden worden lokaal in de browser op datum opgeslagen.
  */
 
 class Race {
@@ -22,8 +28,7 @@ class Race {
             alert("Geen juiste dataTypes meegegeven met de klasse Race");
             throw new Error("Geen juiste dataTypes meegegeven met de klasse Race");
         }
-
-        this.id = id ?? saveData.getNextId();
+        this.id = id;
         this.name = name;
         this.place = place;
         this.distance = distance;
@@ -59,20 +64,72 @@ class SaveData {
         return `${yyyy}-${mm}-${dd}`;
     }
 
+    fromRowToRace(row) {
+        return new Race(
+            row.name,
+            row.place,
+            Number(row.distance),
+            new Date(row.race_date),
+            row.color,
+            row.id,
+            row.travel_time
+        )
+    }
+
     /**
      * Hier moet als param een object van het type Race worden meegegeven.
      * @param race
      */
-    saveRace(race) {
+    async saveRace(race) {
         if (!(race instanceof Race)) {
             alert("geen Race klasse meegegeven met de functie.")
             throw new Error("geen Race klasse");
         }
-        const racesArr = this.getRacesOnDate(race.date);
 
-        racesArr.push(race);
-        const key = saveData.formatDateKey(race.date);
-        localStorage.setItem(key, JSON.stringify(racesArr));
+        const key = this.formatDateKey(race.date);
+        const {data, error} = await supabase.from("race_table").insert([
+        {
+            name: race.name,
+            place: race.place,
+            distance: race.distance,
+            race_date: race.date.toISOString().split("T")[0],
+            color: race.color,
+            travel_time: race.travelTime
+        }
+        ]).select();
+
+        if (error) {
+            console.error("Insert error:", error);
+            return null;
+        }
+
+        this.invalidateSaveData();
+    }
+
+    async updateRace(newRaceData) {
+        const {data, error} = await supabase
+            .from("race_table")
+            .update({
+                name: newRaceData.name,
+                place: newRaceData.place,
+                distance: newRaceData.distance,
+                race_date: newRaceData.date.toISOString().split("T")[0], // YYYY-MM-DD
+                color: newRaceData.color,
+                travel_time: newRaceData.travelTime
+            })
+            .eq("id", newRaceData.id)
+            .select(); // returns updated rows
+
+        if (error) {
+            console.error("Update error:", error);
+            alert("Error updating data");
+            return null;
+        }
+
+        if (data.length === 0) {
+            alert("No race found with this ID");
+            return null;
+        }
 
         this.invalidateSaveData();
     }
@@ -82,18 +139,49 @@ class SaveData {
      * @param date
      * @returns {Race[]}
      */
-    getRacesOnDate(date) {
-        const key = this.formatDateKey(date);
-        const rawArray = JSON.parse(localStorage.getItem(key)) || [];
-        return rawArray.map(raceObj => new Race(raceObj.name,
-            raceObj.place,
-            raceObj.distance,
-            new Date(raceObj.date),
-            raceObj.color,
-            parseInt(raceObj.id),
-            raceObj.travelTime
-        ));
+    async getRacesOnDate(date) {
+        const formattedDate = this.formatDateKey(date);
+
+        const { data, error } = await supabase
+            .from("race_table")
+            .select("*")
+            .eq("race_date", formattedDate);
+
+        if (error) {
+            console.error(error);
+            alert("Error fetching data");
+            return [];
+        }
+
+        if (data.length === 0) {
+            return [];
+        }
+
+
+        // Convert DB rows into Race instances
+        return data.map(row => this.fromRowToRace(row));
     }
+
+    async getRacesFromToDate(startDate, endDate) {
+        const startFormatted = this.formatDateKey(startDate);
+        const endFormatted = this.formatDateKey(endDate);
+
+        const { data, error } = await supabase
+            .from("race_table")
+            .select("*")
+            .gte("race_date", startFormatted)
+            .lte("race_date", endFormatted);
+
+        if (error) {
+            console.error(error);
+            alert("Error fetching data");
+        } else {
+            return data.map(
+                row => this.fromRowToRace(row)
+            );
+        }
+    }
+
 
     invalidateSaveData() {
         for (let listener of this.listeners) {
@@ -101,20 +189,16 @@ class SaveData {
         }
     }
 
-    removeRace(race, id=null) {
-        if (! id) {
-            id = race.id;
+    async removeRace(race) {
+        const {data, error} = await supabase
+            .from('race_table')
+            .delete()
+            .eq("id", race.id)
+            .select();
+
+        if (error) {
+            alert("Error updating data");
         }
-
-        const arr = this.getRacesOnDate(race.date);
-
-        const index = arr.findIndex(r => r.id === id);
-
-        if (index !== -1) {
-            arr.splice(index, 1); // verwijder element
-        }
-        const key = saveData.formatDateKey(race.date);
-        localStorage.setItem(key, JSON.stringify(arr));
 
         this.invalidateSaveData();
     }
@@ -136,3 +220,5 @@ class SaveData {
         return nextId;
     }
 }
+
+export {SaveData, Race};

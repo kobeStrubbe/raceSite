@@ -50,3 +50,5 @@ async function getTravelTime(fromPlace, toPlace) {
 
 }
 
+export {getTravelTime, startLocation};
+
