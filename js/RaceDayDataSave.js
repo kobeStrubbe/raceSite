@@ -163,8 +163,8 @@ class SaveData {
     }
 
     async getRacesFromToDate(startDate, endDate) {
-        const startFormatted = this.formatDateKey(startDate);
-        const endFormatted = this.formatDateKey(endDate);
+        const startFormatted = startDate.toISOString().split("T")[0] + "T00:00:00Z";
+        const endFormatted = endDate.toISOString().split("T")[0] + "T23:59:59Z";
 
         const { data, error } = await supabase
             .from("race_table")
@@ -175,6 +175,7 @@ class SaveData {
         if (error) {
             console.error(error);
             alert("Error fetching data");
+            return [];
         } else {
             return data.map(
                 row => this.fromRowToRace(row)

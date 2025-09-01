@@ -1,4 +1,4 @@
-import {SaveData} from "../RaceDayDataSave.js";
+import {SaveData, Race} from "../RaceDayDataSave.js";
 import {addData} from "./AddRaceMenu.js";
 
 class CurrentMonthYearObservable {
@@ -128,6 +128,8 @@ window.start = start;
  * waarvoor de maand layout moet worden berekend.
  */
 async function loadMonth(yearNumber, monthNumber) {
+    const loadingDiv = document.getElementById("loading_screen");
+    loadingDiv.style.visibility = "visible";
     document.getElementById("days_list").innerHTML = "";
 
 
@@ -138,18 +140,21 @@ async function loadMonth(yearNumber, monthNumber) {
         return new Date(year, (month - 1) % 12, 1).getDay();
     }
 
-    async function createView(dayNumber, month, year) {
+    async function createView(dayNumber, month, year, racesByDate) {
         const el = document.createElement("li");
         el.textContent = dayNumber;
 
-        const races = await saveData.getRacesOnDate(new Date(year, month - 1, dayNumber));
-        for (let race of races) {
+        const key = new Date(year, month - 1, dayNumber).toDateString();
+        const racesForDay = racesByDate[key] || [];
+
+        for (const race of racesForDay) {
             const raceViewCalendar = createRaceView(race);
-            el.appendChild(raceViewCalendar); // DOM-element toevoegen
+            el.appendChild(raceViewCalendar);
         }
 
         return el;
     }
+
 
     function createRaceView(race) {
         const outsideDiv = document.createElement("div");
@@ -179,24 +184,43 @@ async function loadMonth(yearNumber, monthNumber) {
         return outsideDiv;
     }
 
+    function groupRacesByDate(races) {
+        const map = {};
+        for (const race of races) {
+            const key = race.date.toDateString();
+            if (!map[key]) map[key] = [];
+            map[key].push(race);
+        }
+        return map;
+    }
+
 
     const amountOfDays = getAmountOfDays(yearNumber, monthNumber);
     const startDay = getStartDay(yearNumber, monthNumber);
     const prevMonthYear = (monthNumber === 1) ? yearNumber - 1 : yearNumber;
     const prevMonth = (monthNumber === 1) ? 12 : monthNumber - 1;
     const daysPrevMonth = getAmountOfDays(prevMonthYear, prevMonth);
+    const races = await saveData.getRacesFromToDate(
+        new Date(prevMonthYear, prevMonth - 1, daysPrevMonth - startDay + 1),
+        new Date(yearNumber, monthNumber, amountOfDays)
+    );
+
+    const racesByDate = groupRacesByDate(races);
 
     document.getElementById("month_name").innerHTML = `${months[monthNumber - 1]} ${yearNumber}` ;
 
     for (let i = daysPrevMonth - startDay + 2; i < daysPrevMonth + 1; i++) {
-        const view = await createView(i, prevMonth, prevMonthYear);
-        document.getElementById("days_list").append(view);
-    }
-    for (let i = 1; i < amountOfDays + 1; i++) {
-        const view = await createView(i, monthNumber, yearNumber);
+
+        const view = await createView(i, prevMonth, prevMonthYear, racesByDate);
         document.getElementById("days_list").append(view);
     }
 
+    for (let i = 1; i < amountOfDays + 1; i++) {
+        const view = await createView(i, monthNumber, yearNumber, racesByDate);
+        document.getElementById("days_list").append(view);
+    }
+
+    loadingDiv.style.visibility = "hidden";
 }
 
 saveData.addListener(async () => await loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth()));
