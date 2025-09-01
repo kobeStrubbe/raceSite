@@ -10,6 +10,16 @@
 <script type="module" src="../js/ListView/List.js"></script>
 <body onload="start()">
     <div id="content_container">
+        <div id="list_header">
+            <div class="list_input_div">
+                <label for="date_start_input" >Start Date:</label>
+                <input type="date" id="date_start_input" name="date_start" onchange="handleChangeDateInput()">
+            </div>
+            <div class="list_input_div" >
+                <label for="date_end_input" >End Date:</label>
+                <input type="date" id="date_end_input" name="date_end" onchange="handleChangeDateInput()">
+            </div>
+        </div>
         <div id="list_view">
             <ol id="list_top">
                 <li>Date</li>

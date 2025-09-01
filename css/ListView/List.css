@@ -20,3 +20,54 @@
     border-color: #e0e0e0;
     border-radius: 10px;
 }
+
+#list_header {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.list_input_div {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Poppins', sans-serif;
+}
+
+
+.list_input_div input {
+    width: 100px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    border: 1px solid #a8a8a8;
+}
+
+.list_input_div label {
+    font-size: 10px;
+    font-weight: bold;
+}
+
+#race_list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.race_row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* same as header */
+    text-align: center;
+    padding: 6px 4px;
+    border-bottom: 1px solid #e0e0e0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+
+.race_col {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
