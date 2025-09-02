@@ -77,3 +77,27 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.options_col_div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5px;
+}
+
+.options_col_div button {
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    background-color: #a4dbd9;
+    border: none;
+    border-radius: 5px;
+}
+
+.options_col_div button:hover {
+    background-color: #a8a8a8;
+}
+
+.options_col_div button:active {
+    border: 1px solid black;
+}

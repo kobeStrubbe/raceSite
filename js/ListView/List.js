@@ -1,5 +1,5 @@
 import {SaveData, Race} from "../RaceDayDataSave.js";
-import {initAddRaceMenu} from "../CalendarView/AddRaceMenu.js";
+import {addData, initAddRaceMenu} from "../CalendarView/AddRaceMenu.js";
 const saveData = new SaveData();
 const standardMenuView =
     `<Button
@@ -74,11 +74,30 @@ function addRaceToList(race) {
     travelCol.classList.add("race_col");
     travelCol.textContent = race.travelTime + " min";
 
+    const optionsCol = document.createElement("div");
+    optionsCol.classList.add("race_col");
+    optionsCol.classList.add("options_col_div");
+
+    const editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+    editButton.addEventListener("click", () => {
+        clickAddRace();
+        addData(race);
+    })
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "X";
+    deleteButton.addEventListener("click", () => {
+        saveData.removeRace(race);
+    })
+    optionsCol.appendChild(deleteButton);
+    optionsCol.appendChild(editButton);
+
     // Append columns into row
     li.appendChild(dateCol);
     li.appendChild(nameCol);
     li.appendChild(distCol);
     li.appendChild(travelCol);
+    li.appendChild(optionsCol);
 
     // Add row to list
     document.getElementById("race_list").appendChild(li);
