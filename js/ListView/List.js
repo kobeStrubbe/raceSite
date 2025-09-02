@@ -1,5 +1,15 @@
 import {SaveData, Race} from "../RaceDayDataSave.js";
+import {initAddRaceMenu} from "../CalendarView/AddRaceMenu.js";
 const saveData = new SaveData();
+const standardMenuView =
+    `<Button
+                    id="change_calander_view_button"
+                    class="change_calander_view_button"
+                    onclick="window.location.href='Calendar.html'"
+            >Calendar view</Button>
+            <Button id="addButton" onclick="clickAddRace()" >Add race</Button>`
+
+initAddRaceMenu({saveData, standardMenuView});
 
 async function start() {
     const startDateInput = document.getElementById("date_start_input");
@@ -11,15 +21,20 @@ async function start() {
 
     startDateInput.value = firstDay.toISOString().split("T")[0];
     endDateInput.value = lastDay.toISOString().split("T")[0];
+
+    handleChangeDateInput();
 }
 
 async function handleChangeDateInput() {
+    const loadingScreen = document.getElementById("loading_screen");
+    loadingScreen.style.visibility = "visible";
+
     const startDateInput = document.getElementById("date_start_input");
     const endDateInput = document.getElementById("date_end_input");
+    document.getElementById("race_list").innerHTML = "";
 
     if (startDateInput.value !== "" && endDateInput.value !== "") {
 
-        document.getElementById("race_list").innerHTML ="";
         const start = new Date(startDateInput.value);
         const end = new Date(endDateInput.value);
 
@@ -29,6 +44,8 @@ async function handleChangeDateInput() {
             addRaceToList(race);
         }
     }
+
+    loadingScreen.style.visibility = "hidden";
 }
 
 function addRaceToList(race) {
@@ -67,6 +84,9 @@ function addRaceToList(race) {
     document.getElementById("race_list").appendChild(li);
 }
 
+saveData.addListener( async () => await handleChangeDateInput())
 
 window.handleChangeDateInput = handleChangeDateInput;
 window.start = start;
+
+export {saveData};

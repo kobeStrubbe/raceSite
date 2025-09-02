@@ -1,5 +1,4 @@
 import {getTravelTime, startLocation} from "./OpenRouteServiceAPI.js";
-import {saveData, standardMenuView} from "./Calendar.js";
 import {Race} from "../RaceDayDataSave.js";
 
 const raceMenuView = `
@@ -43,6 +42,13 @@ const raceMenuView = `
   </div>
 `;
 
+let saveData;
+let standardMenuView;
+
+export function initAddRaceMenu(config) {
+    saveData = config.saveData;
+    standardMenuView = config.standardMenuView;
+}
 
 /**
  * Als er in het menu op de knop add Race wordt geklikt moet het menu veranderen:

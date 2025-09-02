@@ -1,5 +1,5 @@
 import {SaveData, Race} from "../RaceDayDataSave.js";
-import {addData} from "./AddRaceMenu.js";
+import {addData, initAddRaceMenu} from "./AddRaceMenu.js";
 
 class CurrentMonthYearObservable {
     constructor() {
@@ -66,6 +66,9 @@ const standardMenuView =
                 onclick="window.location.href='ListviewPage.html'"
         >List view calendar</Button>
         <Button id="addButton" onclick="clickAddRace()" >Add race</Button>`
+
+initAddRaceMenu({saveData, standardMenuView});
+
 const months = [
     "January",
     "February",

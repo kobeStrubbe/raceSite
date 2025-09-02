@@ -5,30 +5,47 @@
     <title>ListView</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="../css/ListView/List.css" rel="stylesheet">
+    <link href="../css/Menu.css" rel="stylesheet">
+    <link href="../css/LoadingScreen.css" rel="stylesheet">
 </head>
 <script type="module" src="../js/RaceDayDataSave.js"></script>
 <script type="module" src="../js/ListView/List.js"></script>
+<script type="module" src="../js/CalendarView/AddRaceMenu.js"></script>
 <body onload="start()">
     <div id="content_container">
-        <div id="list_header">
-            <div class="list_input_div">
-                <label for="date_start_input" >Start Date:</label>
-                <input type="date" id="date_start_input" name="date_start" onchange="handleChangeDateInput()">
-            </div>
-            <div class="list_input_div" >
-                <label for="date_end_input" >End Date:</label>
-                <input type="date" id="date_end_input" name="date_end" onchange="handleChangeDateInput()">
+        <div id="loading_screen">
+            <div class="loader">
             </div>
         </div>
-        <div id="list_view">
-            <ol id="list_top">
-                <li>Date</li>
-                <li>Name</li>
-                <li>Distance</li>
-                <li>Travel time</li>
-            </ol>
-            <ol id="race_list" >
-            </ol>
+        <div id="menu">
+            <Button
+                    id="change_calander_view_button"
+                    class="change_calander_view_button"
+                    onclick="window.location.href='Calendar.html'"
+            >Calendar view</Button>
+            <Button id="addButton" onclick="clickAddRace()" >Add race</Button>
+        </div>
+        <div id="list" >
+            <div id="list_header">
+                <div class="list_input_div">
+                    <label for="date_start_input" >Start Date:</label>
+                    <input type="date" id="date_start_input" name="date_start" onchange="handleChangeDateInput()">
+                </div>
+                <div class="list_input_div" >
+                    <label for="date_end_input" >End Date:</label>
+                    <input type="date" id="date_end_input" name="date_end" onchange="handleChangeDateInput()">
+                </div>
+            </div>
+            <div id="list_view">
+                <ol id="list_top">
+                    <li>Date</li>
+                    <li>Name</li>
+                    <li>Distance</li>
+                    <li>Travel time</li>
+                </ol>
+                <ol id="race_list" >
+                </ol>
+            </div>
         </div>
     </div>
 </body>
