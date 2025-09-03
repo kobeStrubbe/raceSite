@@ -8,7 +8,6 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 /*
 Alle data omtrent de wedstrijden worden lokaal in de browser op datum opgeslagen.
  */
-
 class Race {
     /**
      * Een klasse die de opslag van een race voorstelt.
@@ -40,15 +39,29 @@ class Race {
 
 }
 
+class RaceCalendar {
+
+    constructor(name, id=null) {
+        this.name = name;
+        this.id = id;
+    }
+
+}
+
 
 class SaveData {
 
     constructor() {
-        this.listeners = [];
+        this.raceListeners = [];
+        this.raceCalendarListeners = [];
     }
 
-    addListener(listener) {
-        this.listeners.push(listener);
+    addRaceListener(listener) {
+        this.raceListeners.push(listener);
+    }
+
+    addRaceCalendarListener(listener) {
+        this.raceCalendarListeners.push(listener);
     }
 
     /**
@@ -103,7 +116,7 @@ class SaveData {
             return null;
         }
 
-        this.invalidateSaveData();
+        this.invalidateRaceSaveData();
     }
 
     async updateRace(newRaceData) {
@@ -131,7 +144,7 @@ class SaveData {
             return null;
         }
 
-        this.invalidateSaveData();
+        this.invalidateRaceSaveData();
     }
 
     /**
@@ -184,8 +197,14 @@ class SaveData {
     }
 
 
-    invalidateSaveData() {
-        for (let listener of this.listeners) {
+    invalidateRaceSaveData() {
+        for (let listener of this.raceListeners) {
+            listener();
+        }
+    }
+
+    invalidateRaceCalanderData() {
+        for (let listener of this.raceCalendarListeners) {
             listener();
         }
     }
@@ -201,25 +220,58 @@ class SaveData {
             alert("Error updating data");
         }
 
-        this.invalidateSaveData();
+        this.invalidateRaceSaveData();
     }
 
     clearDate(date) {
         const key = this.formatDateKey(date);
         localStorage.removeItem(key);
 
-        this.invalidateSaveData();
+        this.invalidateRaceSaveData();
     }
 
-    /**
-     * Dit is om de unieke id van elke race te gaan opvragen.
-     * @returns {string}
-     */
-    getNextId() {
-        const nextId = parseInt(localStorage.getItem("id"));
-        localStorage.setItem("id", nextId + 1);
-        return nextId;
+    async createRaceCalendar(raceCalendar) {
+        if (!( raceCalendar instanceof RaceCalendar) ) {
+            alert("geen Race klasse");
+            return;
+        }
+
+        const {data, error} = await supabase.from("race_calendar").insert(
+            [{
+                    name : raceCalendar.name
+            }]
+        ).select();
+
+        if (error) {
+            alert("Error saving data");
+            console.log("Error saving data: " + error);
+            return;
+        }
+
+        this.invalidateRaceCalanderData();
+
+        return data[0].id;
     }
+
+    async addRaceToCalendar(race, raceCalendar) {
+        const {data, error} = await supabase
+            .from("race_calendar_race")
+            .insert(
+                [{
+                    race_id : race.id,
+                    calendar_id : raceCalendar.id
+                }]
+            ).select();
+
+        if (error) {
+            alert("Error saving data");
+            console.log("Error saving data: " + error);
+            return;
+        }
+
+        this.invalidateRaceCalanderData();
+    }
+
 }
 
 export {SaveData, Race};

@@ -103,7 +103,7 @@ function addRaceToList(race) {
     document.getElementById("race_list").appendChild(li);
 }
 
-saveData.addListener( async () => await handleChangeDateInput())
+saveData.addRaceListener( async () => await handleChangeDateInput())
 
 window.handleChangeDateInput = handleChangeDateInput;
 window.start = start;

@@ -226,6 +226,6 @@ async function loadMonth(yearNumber, monthNumber) {
     loadingDiv.style.visibility = "hidden";
 }
 
-saveData.addListener(async () => await loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth()));
+saveData.addRaceListener(async () => await loadMonth(yearMonthObservable.getYear(), yearMonthObservable.getMonth()));
 
 export {saveData, standardMenuView};
