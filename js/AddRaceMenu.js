@@ -1,5 +1,5 @@
-import {getTravelTime, startLocation} from "./OpenRouteServiceAPI.js";
-import {Race} from "../RaceDayDataSave.js";
+import {getTravelTime, startLocation} from "./CalendarView/OpenRouteServiceAPI.js";
+import {Race} from "./RaceDayDataSave.js";
 
 const raceMenuView = `
   <div id="add_race_menu">
@@ -38,7 +38,7 @@ const raceMenuView = `
     <input type="date" id="date_input" class="menuInput">
     <Label class="menuLabel">Travel time:</Label>
     <span id="travel_time_span">...</span>
-    <button id="addButton" onclick="clickSaveRace()">Save</button>
+    <button class="addButton" onclick="clickSaveRace()">Save</button>
   </div>
 `;
 

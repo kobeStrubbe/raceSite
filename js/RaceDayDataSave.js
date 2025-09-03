@@ -39,7 +39,7 @@ class Race {
 
 }
 
-class RaceCalendar {
+export class RaceCalendar {
 
     constructor(name, id=null) {
         this.name = name;
@@ -196,7 +196,6 @@ class SaveData {
         }
     }
 
-
     invalidateRaceSaveData() {
         for (let listener of this.raceListeners) {
             listener();
@@ -230,7 +229,7 @@ class SaveData {
         this.invalidateRaceSaveData();
     }
 
-    async createRaceCalendar(raceCalendar) {
+    async saveRaceCalendar(raceCalendar) {
         if (!( raceCalendar instanceof RaceCalendar) ) {
             alert("geen Race klasse");
             return;

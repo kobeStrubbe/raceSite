@@ -10,7 +10,8 @@
 </head>
 <script type="module" src="../js/RaceDayDataSave.js"></script>
 <script type="module" src="../js/ListView/List.js"></script>
-<script type="module" src="../js/CalendarView/AddRaceMenu.js"></script>
+<script type="module" src="../js/addCalendarMenu.js"></script>
+<script type="module" src="../js/AddRaceMenu.js"></script>
 <body onload="start()">
     <div id="content_container">
         <div id="loading_screen">
@@ -23,7 +24,13 @@
                     class="change_calander_view_button"
                     onclick="window.location.href='Calendar.html'"
             >Calendar view</Button>
-            <Button id="addButton" onclick="clickAddRace()" >Add race</Button>
+            <span class="infoSpan">
+            To add a race you need to click on the add race button.
+            In order to add a race you need to have added a race calendar with the add calendar button.
+            You can add multiple races to one calendar and you can add the same race to different calendars.
+            </span>
+            <Button id="addButton" class="addButton" onclick="clickAddRace()" >Add race</Button>
+            <Button id="addCalendarButton" class="addButton" onclick="clickAddCalendar()">Add calendar</Button>
         </div>
         <div id="list" >
             <div id="list_header">

@@ -1,5 +1,7 @@
 import {SaveData, Race} from "../RaceDayDataSave.js";
-import {addData, initAddRaceMenu} from "../CalendarView/AddRaceMenu.js";
+import {addData, initAddRaceMenu} from "../AddRaceMenu.js";
+import {initAddCalendarMenu} from "../addCalendarMenu.js";
+
 const saveData = new SaveData();
 const standardMenuView =
     `<Button
@@ -7,9 +9,17 @@ const standardMenuView =
                     class="change_calander_view_button"
                     onclick="window.location.href='Calendar.html'"
             >Calendar view</Button>
-            <Button id="addButton" onclick="clickAddRace()" >Add race</Button>`
+    <span class="infoSpan">
+            To add a race you need to click on the add race button.
+            In order to add a race you need to have added a race calendar with the add calendar button.
+            You can add multiple races to one calendar and you can add the same race to different calendars.
+    </span>
+    <Button class="addButton" onclick="clickAddRace()" >Add race</Button>
+    <Button class="addButton" onclick="clickAddCalendar()">Add calendar</Button>
+`
 
 initAddRaceMenu({saveData, standardMenuView});
+initAddCalendarMenu({saveData, standardMenuView});
 
 async function start() {
     const startDateInput = document.getElementById("date_start_input");
