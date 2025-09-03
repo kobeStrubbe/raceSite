@@ -1,6 +1,6 @@
 import {SaveData, Race} from "../RaceDayDataSave.js";
 import {addData, initAddRaceMenu} from "../AddRaceMenu.js";
-import {initAddCalendarMenu} from "../addCalendarMenu.js";
+import {initAddCalendarMenu} from "../AddCalendarMenu.js";
 
 const saveData = new SaveData();
 const standardMenuView =

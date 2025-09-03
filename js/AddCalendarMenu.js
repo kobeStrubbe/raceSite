@@ -31,6 +31,7 @@ async function saveCalendar() {
 
     const name = document.getElementById("nameInput").value.trim();
     await saveData.saveRaceCalendar(new RaceCalendar(name));
+    closeRaceMenu();
 
     loadingScreen.style.visibility = "hidden";
 }

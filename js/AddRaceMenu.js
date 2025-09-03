@@ -1,5 +1,5 @@
 import {getTravelTime, startLocation} from "./CalendarView/OpenRouteServiceAPI.js";
-import {Race} from "./RaceDayDataSave.js";
+import {Race, RaceCalendar} from "./RaceDayDataSave.js";
 
 const raceMenuView = `
   <div id="add_race_menu">
@@ -36,6 +36,8 @@ const raceMenuView = `
     </select>
     <label for="date_input" class="menuLabel">Date:</label>
     <input type="date" id="date_input" class="menuInput">
+    <label for="race_calendar_select" class="menuLabel">Race calendar:</label>
+    <select id="race_calendar_select" class="menuInput" style="height: 22px" ></select>
     <Label class="menuLabel">Travel time:</Label>
     <span id="travel_time_span">...</span>
     <button class="addButton" onclick="clickSaveRace()">Save</button>
@@ -44,16 +46,25 @@ const raceMenuView = `
 
 let saveData;
 let standardMenuView;
+let raceCalendars = [];
 
-export function initAddRaceMenu(config) {
+export async function initAddRaceMenu(config) {
     saveData = config.saveData;
     standardMenuView = config.standardMenuView;
+
+    raceCalendars = await saveData.getAllRaceCalendars();
+
+    saveData.addRaceCalendarListener(
+        async () => {
+            raceCalendars = await saveData.getAllRaceCalendars();
+        }
+    )
 }
 
 /**
  * Als er in het menu op de knop add Race wordt geklikt moet het menu veranderen:
  */
-function clickAddRace() {
+async function clickAddRace() {
     const menu = document.getElementById("menu");
 
     menu.innerHTML = raceMenuView;
@@ -64,12 +75,22 @@ function clickAddRace() {
     const distanceTypeInput = document.getElementById("distance_type_select");
     const locationInput = document.getElementById("location_input");
     const colorInput = document.getElementById("color_input");
-    const inputs = [nameInput, dateInput, distanceInput, distanceTypeInput, locationInput];
+    const raceCalendarInput = document.getElementById("race_calendar_select");
+
+    const inputs = [nameInput, raceCalendarInput , colorInput, dateInput, distanceInput, distanceTypeInput, locationInput];
+
 
     for (let input of inputs) {
         input.addEventListener("change", function (event) {
             input.classList.remove("menuInputError");
         })
+    }
+
+    for (let raceCalendar of raceCalendars) {
+        const el = document.createElement("option");
+        el.textContent = raceCalendar.name;
+        el.dataset.race_calendar_id = raceCalendar.id;
+        raceCalendarInput.appendChild(el);
     }
 
 }
@@ -88,7 +109,16 @@ async function clickSaveRace() {
     const distanceTypeInput = document.getElementById("distance_type_select");
     const locationInput = document.getElementById("location_input");
     const colorInput = document.getElementById("color_input");
-    const inputs = [nameInput, dateInput, distanceInput, distanceTypeInput, locationInput, colorInput];
+    const raceCalendarSelect = document.getElementById("race_calendar_select");
+    const inputs = [
+        nameInput,
+        dateInput,
+        distanceInput,
+        distanceTypeInput,
+        locationInput,
+        colorInput,
+        raceCalendarSelect
+    ];
 
     function checkInput(input) {
         if (input.value.trim() === "") {
@@ -108,6 +138,7 @@ async function clickSaveRace() {
     }
 
     if (! valid) {
+        loadingDiv.style.visibility = "hidden";
         return;
     }
 
@@ -139,7 +170,7 @@ async function clickSaveRace() {
             travel
         );
 
-        saveData.updateRace(race);
+        await saveData.updateRace(race);
     } else {
         race = new Race(
             nameInput.value,
@@ -151,9 +182,14 @@ async function clickSaveRace() {
             travel
         );
 
-        saveData.saveRace(race);
+        await saveData.saveRace(race);
     }
 
+    const selectedOption = raceCalendarSelect.selectedOptions[0];
+    const idCal = selectedOption.dataset.race_calendar_id;
+    const calendar = new RaceCalendar( selectedOption.textContent ,idCal);
+
+    await saveData.addRaceToCalendar(race, calendar);
     closeRaceMenu();
     loadingDiv.style.visibility = "hidden";
 }

@@ -253,6 +253,7 @@ class SaveData {
     }
 
     async addRaceToCalendar(race, raceCalendar) {
+
         const {data, error} = await supabase
             .from("race_calendar_race")
             .insert(
@@ -269,6 +270,23 @@ class SaveData {
         }
 
         this.invalidateRaceCalanderData();
+    }
+
+    async getAllRaceCalendars() {
+        const {data, error} = await supabase.from("race_calendar").select('*');
+
+        if (error) {
+            alert("Error saving data");
+            console.error(error);
+
+            return;
+        }
+
+        return data.map(row => this.fromRowToRaceCalendar(row));
+    }
+
+    fromRowToRaceCalendar(row) {
+        return new RaceCalendar(row.name, row.id);
     }
 
 }
