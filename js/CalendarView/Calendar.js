@@ -191,6 +191,8 @@ async function loadMonth(yearNumber, monthNumber) {
 
         delButton.addEventListener("click", async function () {
             await saveData.removeRace(race);
+
+            closeRaceMenu();
         })
 
         return outsideDiv;

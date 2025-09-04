@@ -100,9 +100,11 @@ class SaveData {
 
     /**
      * Hier moet als param een object van het type Race worden meegegeven.
+     * Ook het id van de kalender die moet worden verbonden.
      * @param race
+     * @param raceCalendarID
      */
-    async saveRace(race) {
+    async saveRace(race, raceCalendarID) {
         if (!(race instanceof Race)) {
             alert("geen Race klasse meegegeven met de functie.")
             throw new Error("geen Race klasse");
@@ -125,12 +127,27 @@ class SaveData {
             return null;
         }
 
-        //this.invalidateRaceSaveData();
+        const {data2, error2} = await supabase
+            .from("race_calendar_race")
+            .insert(
+                [{
+                    race_id : data[0].id,
+                    calendar_id : raceCalendarID
+                }]
+            ).select();
+
+        if (error2) {
+            alert("Error saving data");
+            console.log("Error saving data: " + error);
+            return;
+        }
+
+        this.invalidateRaceSaveData();
 
         return data[0].id;
     }
 
-    async updateRace(newRaceData) {
+    async updateRace(newRaceData, raceCalendarId) {
         const {data, error} = await supabase
             .from("race_table")
             .update({
@@ -142,7 +159,7 @@ class SaveData {
                 travel_time: newRaceData.travelTime
             })
             .eq("id", newRaceData.id)
-            .select(); // returns updated rows
+            .select();
 
         if (error) {
             console.error("Update error:", error);
@@ -154,6 +171,15 @@ class SaveData {
             alert("No race found with this ID");
             return null;
         }
+
+        const {data2, error2} = await supabase
+            .from("race_calendar_race")
+            .insert(
+                [{
+                    race_id : newRaceData.id,
+                    calendar_id : raceCalendarId
+                }]
+            ).select();
 
         this.invalidateRaceSaveData();
     }
@@ -281,7 +307,7 @@ class SaveData {
             return;
         }
 
-        //this.invalidateRaceSaveData();
+        this.invalidateRaceSaveData();
     }
 
     async getAllRaceCalendars() {

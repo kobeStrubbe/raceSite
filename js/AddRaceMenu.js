@@ -131,6 +131,7 @@ async function clickSaveRace() {
     let raceId = document.getElementById("add_race_menu").getAttribute("data-race-id");
 
     if (raceId) {
+        await saveData.deleteAllConnectionsRace(raceId);
         // Updating existing race
         race = new Race(
             nameInput.value,
@@ -141,9 +142,7 @@ async function clickSaveRace() {
             parseInt(raceId),
             travel
         );
-        await saveData.updateRace(race);
-
-        await saveData.deleteAllConnectionsRace(race.id);
+        await saveData.updateRace(race, parseInt(raceCalendarSelect.value));
     } else {
         // Creating new race
         race = new Race(
@@ -156,12 +155,8 @@ async function clickSaveRace() {
             travel
         );
 
-        raceId = await saveData.saveRace(race);
+        raceId = await saveData.saveRace(race,parseInt(raceCalendarSelect.value));
     }
-    // Save the single calendar connection
-    const calendarId = parseInt(raceCalendarSelect.value); // Only one calendar
-    await saveData.addRaceToCalendar(raceId, calendarId);
-    saveData.invalidateRaceSaveData();
 
     closeRaceMenu();
     loadingDiv.style.visibility = "hidden";
