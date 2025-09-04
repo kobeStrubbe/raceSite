@@ -21,7 +21,9 @@ const standardMenuView =
 initAddRaceMenu({saveData, standardMenuView});
 initAddCalendarMenu({saveData, standardMenuView});
 
-async function start() {
+let raceCalendars;
+
+export async function start() {
     const startDateInput = document.getElementById("date_start_input");
     const endDateInput = document.getElementById("date_end_input");
 
@@ -32,7 +34,49 @@ async function start() {
     startDateInput.value = firstDay.toISOString().split("T")[0];
     endDateInput.value = lastDay.toISOString().split("T")[0];
 
+    raceCalendars = await saveData.getAllRaceCalendars();
+    addCalendarsToFilters(true);
     handleChangeDateInput();
+}
+
+window.start = start;
+
+saveData.addRaceCalendarListener(async () => {
+    raceCalendars = await saveData.getAllRaceCalendars();
+    addCalendarsToFilters();
+})
+
+function addCalendarsToFilters(status=false) {
+    const calendarFilter = document.getElementById("calendar_selection");
+    calendarFilter.innerHTML = "";
+
+    function createCalendarFilterDiv(calendar) {
+        const div = document.createElement("div");
+        div.classList.add("calendar_filter_div");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = calendar.name;
+        checkbox.id = `calendar_${calendar.id}`;
+        checkbox.checked = status;
+
+        checkbox.addEventListener("change", (e) => {handleChangeDateInput()})
+
+        const label = document.createElement("label");
+        label.htmlFor = checkbox.id;
+        label.innerText = calendar.name;
+
+        div.appendChild(checkbox);
+        div.appendChild(label);
+
+        return div;
+    }
+
+    for (let calendar of raceCalendars) {
+
+        const div = createCalendarFilterDiv(calendar);
+        calendarFilter.appendChild(div);
+    }
 }
 
 async function handleChangeDateInput() {
@@ -41,6 +85,17 @@ async function handleChangeDateInput() {
 
     const startDateInput = document.getElementById("date_start_input");
     const endDateInput = document.getElementById("date_end_input");
+    const calendarSelection = document.getElementById("calendar_selection");
+    const calendarCheckBoxes = calendarSelection.querySelectorAll("input");
+
+    let selectedCalendars;
+    selectedCalendars = [];
+    for (let input of calendarCheckBoxes) {
+        if (input.checked) {
+            selectedCalendars.push(input.value);
+        }
+    }
+
     document.getElementById("race_list").innerHTML = "";
 
     if (startDateInput.value !== "" && endDateInput.value !== "") {
@@ -48,17 +103,22 @@ async function handleChangeDateInput() {
         const start = new Date(startDateInput.value);
         const end = new Date(endDateInput.value);
 
-        const races = await saveData.getRacesFromToDate(start, end);
+        const data = (await saveData.createChain()
+            .fromDateToDate(start, end)
+            .raceCalendarEq(selectedCalendars)
+            .getData());
 
-        for (let race of races.sort((a, b) => a.date - b.date)) {
-            addRaceToList(race);
+
+        for (let race of data.races.sort((a, b) => a.date - b.date)) {
+            addRaceToList(race, data.connections[race.id]);
         }
     }
 
     loadingScreen.style.visibility = "hidden";
 }
 
-function addRaceToList(race) {
+function addRaceToList(race, connectionId) {
+
     const li = document.createElement("li");
     li.classList.add("race_row");
 
@@ -91,8 +151,9 @@ function addRaceToList(race) {
     const editButton = document.createElement("button");
     editButton.textContent = "Edit";
     editButton.addEventListener("click", () => {
+        const raceConnection = connectionId ?? null;
         clickAddRace();
-        addData(race);
+        addData(race, raceConnection);
     })
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "X";
@@ -116,6 +177,4 @@ function addRaceToList(race) {
 saveData.addRaceListener( async () => await handleChangeDateInput())
 
 window.handleChangeDateInput = handleChangeDateInput;
-window.start = start;
-
 export {saveData};

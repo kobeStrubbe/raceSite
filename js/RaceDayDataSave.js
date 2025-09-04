@@ -118,14 +118,16 @@ class SaveData {
             color: race.color,
             travel_time: race.travelTime
         }
-        ]).select();
+        ]).select("id");
 
         if (error) {
             console.error("Insert error:", error);
             return null;
         }
 
-        this.invalidateRaceSaveData();
+        //this.invalidateRaceSaveData();
+
+        return data[0].id;
     }
 
     async updateRace(newRaceData) {
@@ -228,6 +230,7 @@ class SaveData {
             alert("Error updating data");
         }
 
+        await this.deleteAllConnectionsRace(race.id)
         this.invalidateRaceSaveData();
     }
 
@@ -261,14 +264,14 @@ class SaveData {
         return data[0].id;
     }
 
-    async addRaceToCalendar(race, raceCalendar) {
+    async addRaceToCalendar(raceID, raceCalendarID) {
 
         const {data, error} = await supabase
             .from("race_calendar_race")
             .insert(
                 [{
-                    race_id : race.id,
-                    calendar_id : raceCalendar.id
+                    race_id : raceID,
+                    calendar_id : raceCalendarID
                 }]
             ).select();
 
@@ -278,7 +281,7 @@ class SaveData {
             return;
         }
 
-        this.invalidateRaceCalanderData();
+        //this.invalidateRaceSaveData();
     }
 
     async getAllRaceCalendars() {
@@ -347,12 +350,88 @@ class SaveData {
         }
     }
 
-
-
     fromRowToRaceCalendar(row) {
         return new RaceCalendar(row.name, row.id);
     }
 
+    createChain() {
+        return new Chain();
+    }
+
 }
+
+class Chain {
+
+    constructor(chain=null) {
+        this.chain = chain ?? supabase.from("race_with_calendars").select('*');
+    }
+
+    fromDateToDate(startDate, endDate) {
+        const start = startDate.toISOString().split("T")[0];
+        const end = endDate.toISOString().split("T")[0];
+
+        return new Chain(
+            this.chain.gte("race_date", start).lte("race_date", end)
+        );
+    }
+    /**
+     * Hier moet een array met de namen worden meegegeven.
+     */
+    raceCalendarEq(names) {
+        return new Chain(this.chain.in("calendar_name", names));
+    }
+
+    async getData() {
+        const { data, error } = await this.chain;
+
+        if (error) {
+            alert("Error fetching data");
+            console.error(error);
+            return { races: [], connections: {} };
+        }
+
+        const raceMap = new Map();
+        const connections = {}; // dictionary: race_id -> [calendar_id, ...]
+
+        for (let row of data) {
+            // Create race if it doesn't exist yet
+            if (!raceMap.has(row.race_id)) {
+                const race = new Race(
+                    row.race_name,
+                    row.place,
+                    Number(row.distance),
+                    new Date(row.race_date),
+                    row.color,
+                    row.race_id,
+                    row.travel_time
+                );
+                raceMap.set(row.race_id, race);
+            }
+
+            // Add calendar ID to connections array
+            if (row.calendar_id != null) {
+                if (!connections[row.race_id]) {
+                    connections[row.race_id] = [];
+                }
+                connections[row.race_id].push(row.calendar_id);
+            }
+        }
+
+        const races = Array.from(raceMap.values());
+
+        return { races, connections };
+    }
+
+
+}
+
+class ConnectionRaceAndCalendar {
+
+    constructor(race, raceCalendar) {
+        this.race = race;
+        this.raceCalendar = raceCalendar;
+    }
+}
+
 
 export {SaveData, Race};

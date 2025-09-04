@@ -179,7 +179,7 @@ async function loadMonth(yearNumber, monthNumber) {
         outsideDiv.style.backgroundColor = race.color;
         outsideDiv.onclick = function () {
             clickAddRace();
-            addData(race, connectionsDict[race.id] ?? []);
+            addData(race, connectionsDict[race.id] ?? null);
         }
 
         const span = document.createElement("span");
@@ -221,10 +221,7 @@ async function loadMonth(yearNumber, monthNumber) {
 
     const connectionsDict = {};
     for (const conn of allRaceCalenderConnections) {
-        if (!connectionsDict[conn.raceId]) {
-            connectionsDict[conn.raceId] = [];
-        }
-        connectionsDict[conn.raceId].push(conn.calendarId);
+        connectionsDict[conn.raceId] = conn.calendarId;
     }
 
 

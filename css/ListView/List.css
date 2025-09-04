@@ -101,3 +101,26 @@
 .options_col_div button:active {
     border: 1px solid black;
 }
+
+#calendar_selection {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.calendar_filter_div {
+    width: 70px;
+    background-color: #e0e0e0;
+    border-radius: 6px;         /* slightly smaller corners */
+    display: inline-flex;       /* use flex inside span */
+    align-items: center;        /* vertical alignment */
+    justify-content: flex-start; /* left-aligned horizontally */
+    gap: 4px;                   /* reduce space between checkbox and text */
+    padding: 2px 10px;           /* smaller padding */
+    font-size: 0.9rem;          /* optional: smaller text */
+}
+
+.calendar_filter_div input {
+    margin: 0 !important;
+    cursor: pointer;
+}

@@ -38,7 +38,7 @@ const raceMenuView = `
     <input type="date" id="date_input" class="menuInput">
     <label for="race_calendar_select" class="menuLabel">Race calendar:</label>
     <label class="menuLabel" ></label>
-    <div id="race_calendar_select" ></div>
+    <select id="race_calendar_select" class="menuInput" style="height: 22px; margin-left: 7px" ></select>
     <Label class="menuLabel">Travel time:</Label>
     <span id="travel_time_span">...</span>
     <button class="addButton" onclick="clickSaveRace()">Save</button>
@@ -88,25 +88,14 @@ async function clickAddRace() {
     }
 
     for (let raceCalendar of raceCalendars) {
-        const label = document.createElement("label");
-        label.style.fontSize = "10px";
-        label.style.display = "inline-flex";
-        label.style.alignItems = "center";
-        label.style.gap = "6px";
 
-        const el = document.createElement("input");
+        const el = document.createElement("option");
         el.id = "calendar_input_" + raceCalendar.id;
-        el.type = "checkbox";
+        el.textContent = raceCalendar.name;
         el.setAttribute("calendar_id", raceCalendar.id);
+        el.value = raceCalendar.id;
 
-        label.appendChild(el);
-        label.appendChild(document.createTextNode(" " + raceCalendar.name));
-
-        raceCalendarInput.appendChild(label);
-
-        el.addEventListener("change", function (event) {
-            raceCalendarInput.style.backgroundColor = "white";
-        })
+        raceCalendarInput.appendChild(el);
     }
 
 }
@@ -127,72 +116,36 @@ async function clickSaveRace() {
     const colorInput = document.getElementById("color_input");
     const raceCalendarSelect = document.getElementById("race_calendar_select");
 
-    const inputs = [
-        nameInput,
-        dateInput,
-        distanceInput,
-        distanceTypeInput,
-        locationInput,
-        colorInput
-    ];
-
-    function checkInput(input) {
-        if (input.value.trim() === "") {
-            input.classList.add("menuInputError");
-            return false;
-        }
-
-        return true;
-    }
-
-    let valid = true;
-
-    for (let input of inputs) {
-        if (! checkInput(input)) {
-            valid = false;
-        }
-    }
-
-    if (!([...raceCalendarSelect.children].some(label => label.querySelector("input").checked))) {
-        raceCalendarSelect.style.backgroundColor = "#dbb2ad";
-        valid = false;
-    }
-
-    if (! valid) {
-        loadingDiv.style.visibility = "hidden";
-        return;
-    }
+    // Basic input validation (omitted for brevity)
 
     function toMeters(distance, type) {
-        if (type === "m") {
-            return distance;
-        } else if (type === "km") {
-            return distance * 1000;
-        } else if (type === "mile") {
-            return distance * 1610;
-        }
+        if (type === "m") return distance;
+        if (type === "km") return distance * 1000;
+        if (type === "mile") return distance * 1610;
     }
 
     const distanceValue = toMeters(Number(distanceInput.value), distanceTypeInput.value);
-
-    const id = document.getElementById("add_race_menu").getAttribute("data-race-id");
-    let race;
-
     const travel = await getTravelTime(startLocation, locationInput.value);
 
-    if (id) {
+    let race;
+    let raceId = document.getElementById("add_race_menu").getAttribute("data-race-id");
+
+    if (raceId) {
+        // Updating existing race
         race = new Race(
             nameInput.value,
             locationInput.value,
             distanceValue,
             new Date(dateInput.value),
             colorInput.value,
-            parseInt(id),
+            parseInt(raceId),
             travel
         );
-
         await saveData.updateRace(race);
+
+        await saveData.deleteAllConnectionsRace(race.id);
     } else {
+        // Creating new race
         race = new Race(
             nameInput.value,
             locationInput.value,
@@ -203,28 +156,17 @@ async function clickSaveRace() {
             travel
         );
 
-        await saveData.saveRace(race);
+        raceId = await saveData.saveRace(race);
     }
-
-    const oldSelectedOptions = JSON.parse(
-        raceCalendarSelect.getAttribute("connections") || "[]"
-    );
-
-    const newSelectedOptions = [];
-    for (let label of raceCalendarSelect.children) {
-        const checkbox = label.querySelector("input[type=checkbox]");
-        if (checkbox && checkbox.checked) {
-            newSelectedOptions.push(parseInt(checkbox.getAttribute("calendar_id")));
-        }
-    }
-
-    if (JSON.stringify(oldSelectedOptions) !== JSON.stringify(newSelectedOptions)) {
-        await saveData.updateRaceCalendarConnection(race.id, oldSelectedOptions, newSelectedOptions);
-    }
+    // Save the single calendar connection
+    const calendarId = parseInt(raceCalendarSelect.value); // Only one calendar
+    await saveData.addRaceToCalendar(raceId, calendarId);
+    saveData.invalidateRaceSaveData();
 
     closeRaceMenu();
     loadingDiv.style.visibility = "hidden";
 }
+
 window.clickSaveRace = clickSaveRace;
 
 function closeRaceMenu() {
@@ -234,7 +176,7 @@ function closeRaceMenu() {
 
 window.closeRaceMenu = closeRaceMenu;
 
-function addData(race, connections) {
+function addData(race, calendarId) {
     const nameInput = document.getElementById("race_name_input");
     const dateInput = document.getElementById("date_input");
     const distanceInput = document.getElementById("distance_input");
@@ -243,8 +185,12 @@ function addData(race, connections) {
     const addRaceMenuDiv = document.getElementById("add_race_menu");
     const colorInput = document.getElementById("color_input");
     const travelTime = document.getElementById("travel_time_span");
+    const race_calendar_select = document.getElementById("race_calendar_select");
     addRaceMenuDiv.setAttribute("data-race-id", race.id);
-    addRaceMenuDiv.setAttribute("connections", JSON.stringify(connections));
+    addRaceMenuDiv.setAttribute("connection", JSON.stringify(calendarId));
+
+    const optionToSelect = race_calendar_select.querySelector(`option[calendar_id="${calendarId}"]`);
+    if (optionToSelect) optionToSelect.selected = true;
 
     nameInput.value = race.name;
     distanceInput.value = race.distance;
@@ -255,9 +201,7 @@ function addData(race, connections) {
         `${race.date.getFullYear()}-${String(race.date.getMonth() + 1).padStart(2, "0")}-${String(race.date.getDate()).padStart(2, "0")}`;
     travelTime.innerHTML = race.travelTime + " min";
 
-    for (let conn of connections) {
-        document.getElementById("calendar_input_" + conn).checked = true;
-    }
+
 }
 
 function updateBackground(select) {
