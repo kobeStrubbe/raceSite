@@ -39,6 +39,15 @@ class Race {
 
 }
 
+export class RaceCalendarConnection {
+
+    constructor(raceId, calendarId) {
+        this.raceId = raceId;
+        this.calendarId = calendarId;
+    }
+
+}
+
 export class RaceCalendar {
 
     constructor(name, id=null) {
@@ -284,6 +293,61 @@ class SaveData {
 
         return data.map(row => this.fromRowToRaceCalendar(row));
     }
+
+    async getAllRaceCalendarConnections() {
+        const {data, error} = await supabase.from("race_calendar_race").select('*');
+
+        if (error) {
+            alert("Error saving data");
+            console.error(error);
+            return;
+        }
+
+        return data.map(row => new RaceCalendarConnection(row.race_id, row.calendar_id));
+    }
+
+    async updateRaceCalendarConnection(raceId, oldCalendarIds, newCalendarIds) {
+        const toAdd = newCalendarIds.filter(id => !oldCalendarIds.includes(id));
+        const toRemove = oldCalendarIds.filter(id => !newCalendarIds.includes(id));
+
+        if (toRemove.length > 0) {
+            const { error: deleteError } = await supabase
+                .from("race_calendar_race")
+                .delete()
+                .eq("race_id", raceId)
+                .in("calendar_id", toRemove);
+
+            if (deleteError) {
+                console.error("Error deleting old connections:", deleteError);
+                return;
+            }
+        }
+
+        if (toAdd.length > 0) {
+            const rows = toAdd.map(id => ({ race_id: raceId, calendar_id: id }));
+            const { error: insertError } = await supabase
+                .from("race_calendar_race")
+                .insert(rows);
+
+            if (insertError) {
+                console.error("Error inserting new connections:", insertError);
+                return;
+            }
+        }
+
+        this.invalidateRaceCalanderData();
+    }
+
+    async deleteAllConnectionsRace(raceId) {
+        const {data, error} = await supabase.from("race_calendar_race").delete().eq("race_id", raceId);
+
+        if (error) {
+            alert("Error deleting old connections");
+            console.error(error);
+        }
+    }
+
+
 
     fromRowToRaceCalendar(row) {
         return new RaceCalendar(row.name, row.id);

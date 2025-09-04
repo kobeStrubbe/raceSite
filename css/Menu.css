@@ -160,3 +160,8 @@
     margin: 10px 0;
     color: #a8a8a8;
 }
+
+#race_calendar_select {
+    display: flex;
+    flex-direction: column;
+}

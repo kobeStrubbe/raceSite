@@ -152,7 +152,7 @@ async function loadMonth(yearNumber, monthNumber) {
         return new Date(year, (month - 1) % 12, 1).getDay();
     }
 
-    async function createView(dayNumber, month, year, racesByDate) {
+    async function createView(dayNumber, month, year, racesByDate, connectionsDict) {
         const el = document.createElement("li");
         el.textContent = dayNumber;
 
@@ -160,7 +160,7 @@ async function loadMonth(yearNumber, monthNumber) {
         const racesForDay = racesByDate[key] || [];
 
         for (const race of racesForDay) {
-            const raceViewCalendar = createRaceView(race);
+            const raceViewCalendar = createRaceView(race, connectionsDict);
             el.appendChild(raceViewCalendar);
         }
 
@@ -168,7 +168,7 @@ async function loadMonth(yearNumber, monthNumber) {
     }
 
 
-    function createRaceView(race) {
+    function createRaceView(race, connectionsDict) {
         const outsideDiv = document.createElement("div");
         const insideDiv = document.createElement("div");
         const delButton = document.createElement("button");
@@ -179,7 +179,7 @@ async function loadMonth(yearNumber, monthNumber) {
         outsideDiv.style.backgroundColor = race.color;
         outsideDiv.onclick = function () {
             clickAddRace();
-            addData(race);
+            addData(race, connectionsDict[race.id] ?? []);
         }
 
         const span = document.createElement("span");
@@ -216,19 +216,28 @@ async function loadMonth(yearNumber, monthNumber) {
         new Date(prevMonthYear, prevMonth - 1, daysPrevMonth - startDay + 1),
         new Date(yearNumber, monthNumber, amountOfDays)
     );
-
+    const allRaceCalenderConnections = await saveData.getAllRaceCalendarConnections();
     const racesByDate = groupRacesByDate(races);
+
+    const connectionsDict = {};
+    for (const conn of allRaceCalenderConnections) {
+        if (!connectionsDict[conn.raceId]) {
+            connectionsDict[conn.raceId] = [];
+        }
+        connectionsDict[conn.raceId].push(conn.calendarId);
+    }
+
 
     document.getElementById("month_name").innerHTML = `${months[monthNumber - 1]} ${yearNumber}` ;
 
     for (let i = daysPrevMonth - startDay + 2; i < daysPrevMonth + 1; i++) {
 
-        const view = await createView(i, prevMonth, prevMonthYear, racesByDate);
+        const view = await createView(i, prevMonth, prevMonthYear, racesByDate, connectionsDict);
         document.getElementById("days_list").append(view);
     }
 
     for (let i = 1; i < amountOfDays + 1; i++) {
-        const view = await createView(i, monthNumber, yearNumber, racesByDate);
+        const view = await createView(i, monthNumber, yearNumber, racesByDate, connectionsDict);
         document.getElementById("days_list").append(view);
     }
 
