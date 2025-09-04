@@ -1,0 +1,17 @@
+
+#top_bar {
+    background-color: #a4dbd9;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    left: 0;
+    top: 0;
+    height: 100%;
+    padding: 7px;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+}
+
+body {
+    margin: 0;
+}

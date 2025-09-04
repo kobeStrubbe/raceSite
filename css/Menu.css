@@ -141,6 +141,7 @@
     padding: 5px;
     font-weight: bold;
     color: white;
+    cursor: pointer;
 }
 
 .change_calander_view_button:hover {
