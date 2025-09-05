@@ -166,3 +166,43 @@
     display: flex;
     flex-direction: column;
 }
+
+.calendar_menu_div {
+    font-family: Poppins, serif;
+    font-size: 11px;
+    color: white;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* push button left, span right */
+    align-items: center;            /* keep both vertically centered */
+    padding: 2px 6px;
+    margin-bottom: 5px;
+}
+
+.calendar_menu_div button {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #ccc;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+}
+
+.calendar_manage_span {
+    font-family: Poppins, serif;
+    font-size: 13px;
+    margin: 20px 0 5px 0;
+    text-align: left;
+}
+
+.calendar_menu_div button:hover {
+    background-color: #bbb;   /* slightly darker grey on hover */
+}

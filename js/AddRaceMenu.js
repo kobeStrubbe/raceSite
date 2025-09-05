@@ -58,8 +58,40 @@ export async function initAddRaceMenu(config) {
     saveData.addRaceCalendarListener(
         async () => {
             raceCalendars = await saveData.getAllRaceCalendars();
+            addCalendarsToMenu();
         }
     )
+
+    addCalendarsToMenu();
+}
+
+function addCalendarsToMenu() {
+
+    const calendarManageDiv =  document.getElementById("calendar_manage_div");
+    calendarManageDiv.innerHTML = '';
+
+    function addCalendarsToMenu(calendar) {
+        const div = document.createElement("div");
+        const span = document.createElement("span");
+        span.innerText = calendar.name;
+        const deleteButton = document.createElement("button");
+        deleteButton.innerText = "X";
+        div.classList.add("calendar_menu_div");
+
+        deleteButton.addEventListener("click", (e) => {
+
+        })
+
+
+        div.appendChild(span);
+        div.appendChild(deleteButton);
+
+        calendarManageDiv.appendChild(div);
+    }
+
+    for (let calendar of raceCalendars) {
+        addCalendarsToMenu(calendar);
+    }
 }
 
 /**
